@@ -419,10 +419,18 @@ def inject_styles() -> None:
                 transform: translateY(-1px) !important;
             }
             button[kind="secondary"] {
+                background: linear-gradient(135deg, rgba(162, 74, 61, 0.12), rgba(162, 74, 61, 0.08)) !important;
+                border: 1px solid rgba(162, 74, 61, 0.2) !important;
                 border-radius: 20px !important;
-                padding: 0.6rem 1.2rem !important;
+                color: #a24a3d !important;
+                padding: 0.65rem 1.4rem !important;
                 font-weight: 600 !important;
                 transition: all 0.2s ease !important;
+            }
+            button[kind="secondary"]:hover {
+                background: linear-gradient(135deg, rgba(162, 74, 61, 0.2), rgba(162, 74, 61, 0.15)) !important;
+                border-color: rgba(162, 74, 61, 0.35) !important;
+                transform: translateY(-1px) !important;
             }
             textarea {
                 border-radius: 16px !important;
