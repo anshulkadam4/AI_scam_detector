@@ -1,95 +1,56 @@
-import pandas as pd
-import re
+import logging
 
-from sklearn.model_selection import train_test_split
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.metrics import accuracy_score
+from detector import predict_message, train_model
 
-
-# LOAD DATASET
-df = pd.read_csv("SMSSmishCollection.txt", sep="\t", names=["label","message"])
-
-print("Dataset size:", df.shape)
-print(df["label"].value_counts())
-
-
-# CONVERT LABELS TO NUMBERS
-df["label"] = df["label"].map({
-    "ham":0,
-    "smish":1
-})
-
-
-# CLEAN TEXT
-def clean_text(text):
-    text = text.lower()
-    text = re.sub(r"http\S+", "", text)
-    text = re.sub(r"\d+", "", text)
-    text = re.sub(r"[^\w\s]", "", text)
-    return text
-
-df["message"] = df["message"].apply(clean_text)
-
-
-# SPLIT DATA
-X_train, X_test, y_train, y_test = train_test_split(
-    df["message"], df["label"], test_size=0.2, random_state=42
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
+logger = logging.getLogger(__name__)
 
 
-# TEXT → NUMBERS
-vectorizer = TfidfVectorizer(stop_words='english', ngram_range=(1,3))
+def main() -> None:
+    try:
+        artifacts = train_model()
+        dataset = artifacts["dataset"]
 
-X_train = vectorizer.fit_transform(X_train)
-X_test = vectorizer.transform(X_test)
+        print("Dataset size:", dataset.shape)
+        print(dataset["label"].value_counts().rename({0: "ham", 1: "spam"}))
+        print(f"\nModel Accuracy: {artifacts['accuracy']:.4f}")
+        print("\nEnter a message to check:")
+
+        user_input = input().strip()
+
+        if not user_input:
+            print("Error: Please enter a message.")
+            return
+
+        result = predict_message(
+            user_input,
+            artifacts["model"],
+            artifacts["vectorizer"],
+        )
+
+        if result["is_scam"]:
+            print("\n⚠️  Possible Scam Message")
+        else:
+            print("\n✓ Message looks Safe")
+
+        print(f"Scam Probability: {result['scam_probability']:.2%}")
+
+        if result["keyword_hits"]:
+            print("Suspicious keywords:", ", ".join(result["keyword_hits"]))
+        else:
+            print("No suspicious keywords found.")
+
+        logger.info(
+            f"Analysis completed. Result: {'Scam' if result['is_scam'] else 'Safe'}"
+        )
+    except Exception as e:
+        logger.error(f"An error occurred: {e}")
+        print(f"Error: {e}")
+        raise
 
 
-# TRAIN MODEL
-model = MultinomialNB()
-model.fit(X_train, y_train)
-
-
-# TEST ACCURACY
-y_pred = model.predict(X_test)
-
-print("\nModel Accuracy:", accuracy_score(y_test, y_pred))
-
-#spamwords
-scam_keywords = [
-    "bank","account","password","otp","verify",
-    "urgent","click","link","prize","win",
-    "payment","blocked","suspended","update"
-]
-
-
-
-# USER INPUT
-print("\nEnter a message to check:")
-
-user_input = input()
-
-clean_input = clean_text(user_input)
-
-vector_input = vectorizer.transform([clean_input])
-
-prediction = model.predict(vector_input)
-
-probability = model.predict_proba(vector_input)
-
-prob = probability[0][1]
-
-keyword_flag = False
-
-for word in scam_keywords:
-    if word in user_input.lower():
-        keyword_flag = True
-        break
-    
-if prediction[0] == 1 or keyword_flag:
-    print("🚨 Possible Scam / Smishing Message")
-else:
-    print("✅ Message looks Safe")
-
-print("Scam Probability:", round(prob,2))
-
+if __name__ == "__main__":
+    main()
