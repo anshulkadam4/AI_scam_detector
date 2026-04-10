@@ -1,0 +1,15 @@
+[
+  {
+    "name": "ai-scam-detector",
+    "version": "1.0.0",
+    "description": "AI-powered SMS/message scam detector using Streamlit and scikit-learn",
+    "main": "app.py",
+    "scripts": {
+      "start": "streamlit run app.py",
+      "cli": "python main.py"
+    },
+    "keywords": ["scam", "detector", "ml", "streamlit", "fraud"],
+    "author": "Your Name",
+    "license": "MIT"
+  }
+]

@@ -1,6 +1,15 @@
+import logging
+
 import streamlit as st
 
 from detector import SAFETY_RECOMMENDATIONS, predict_message, train_model
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logger = logging.getLogger(__name__)
 
 
 EXAMPLE_MESSAGES = [
@@ -12,7 +21,14 @@ EXAMPLE_MESSAGES = [
 
 @st.cache_resource
 def load_artifacts():
-    return train_model()
+    try:
+        artifacts = train_model()
+        logger.info("Model artifacts loaded successfully")
+        return artifacts
+    except Exception as e:
+        logger.error(f"Failed to load model artifacts: {e}")
+        st.error("Unable to load the detection model. Please check the application logs.")
+        st.stop()
 
 
 def inject_styles() -> None:
@@ -342,12 +358,13 @@ with right_col:
             </div>
         </section>
         """,
-        unsafe_allow_html=True,
-    )
-
-if run_check:
-    if not user_input.strip():
-        st.warning("Enter a message before running detection.")
+        try:
+            result = predict_message(
+                user_input,
+                artifacts["model"],
+                artifacts["vectorizer"],
+            )
+            st.warning("Enter a message before running detection.")
     else:
         result = predict_message(
             user_input,
@@ -445,5 +462,8 @@ if run_check:
                         <div>{recommendation}</div>
                     </section>
                     """,
-                    unsafe_allow_html=True,
+                 
+        except Exception as e:
+            logger.error(f"Prediction error: {e}")
+            st.error("An error occurred during message analysis. Please try again.")   unsafe_allow_html=True,
                 )
