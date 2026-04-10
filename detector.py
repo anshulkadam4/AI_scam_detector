@@ -6,9 +6,10 @@ from pathlib import Path
 
 import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
+
 
 # Configure logging
 logger = logging.getLogger(__name__)
@@ -93,14 +94,22 @@ def train_model(test_size: float = 0.2, random_state: int = 42) -> dict:
 
         y_pred = model.predict(x_test_vec)
         accuracy = accuracy_score(y_test, y_pred)
+        precision = precision_score(y_test, y_pred)
+        recall = recall_score(y_test, y_pred)
+        f1 = f1_score(y_test, y_pred)
 
-        logger.info(f"Model trained successfully. Accuracy: {accuracy:.4f}")
+        logger.info(
+            f"Model trained successfully. Accuracy: {accuracy:.4f}, Precision: {precision:.4f}, Recall: {recall:.4f}, F1: {f1:.4f}"
+        )
 
         return {
             "dataset": df,
             "vectorizer": vectorizer,
             "model": model,
             "accuracy": accuracy,
+            "precision": precision,
+            "recall": recall,
+            "f1": f1,
         }
     except Exception as e:
         logger.error(f"Error during model training: {e}")
@@ -124,16 +133,15 @@ def predict_message(message: str, model, vectorizer) -> dict:
         prediction = int(model.predict(vector_input)[0])
         probabilities = model.predict_proba(vector_input)[0]
         keyword_hits = find_scam_keywords(message)
-        scam_probability = float(probabilities[1])
+        raw_probability = float(probabilities[1])
 
-        adjusted_probability = max(
-            scam_probability, min(0.99, 0.15 * len(keyword_hits))
-        )
+        adjusted_probability = max(raw_probability, min(0.99, 0.15 * len(keyword_hits)))
         is_scam = prediction == 1 or bool(keyword_hits)
 
         result = {
             "is_scam": is_scam,
             "model_prediction": prediction,
+            "raw_probability": raw_probability,
             "scam_probability": adjusted_probability,
             "keyword_hits": keyword_hits,
             "cleaned_message": cleaned_message,
