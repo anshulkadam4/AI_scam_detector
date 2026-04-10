@@ -35,6 +35,14 @@ SCAM_KEYWORDS = [
     "gift",
     "offer",
     "claim",
+    "money",
+    "transfer",
+    "wire",
+    "overseas",
+    "visa",
+    "fees",
+    "love",
+    "dear",
 ]
 SAFETY_RECOMMENDATIONS = [
     "Do not click unknown links or download attachments.",
