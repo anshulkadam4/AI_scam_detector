@@ -7,7 +7,7 @@ from detector import SAFETY_RECOMMENDATIONS, predict_message, train_model
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger(__name__)
 
@@ -27,7 +27,9 @@ def load_artifacts():
         return artifacts
     except Exception as e:
         logger.error(f"Failed to load model artifacts: {e}")
-        st.error("Unable to load the detection model. Please check the application logs.")
+        st.error(
+            "Unable to load the detection model. Please check the application logs."
+        )
         st.stop()
 
 
@@ -121,36 +123,29 @@ def inject_styles() -> None:
                 font-size: 1.05rem;
                 margin-bottom: 0.2rem;
             }
-            .stats-grid,
-            .signals-grid,
-            .breakdown-grid {
-                display: grid;
-                gap: 0.9rem;
-            }
             .stats-grid {
+                display: grid;
                 grid-template-columns: repeat(4, minmax(0, 1fr));
+                gap: 0.9rem;
                 margin-top: 1rem;
             }
             .signals-grid {
+                display: grid;
                 grid-template-columns: repeat(3, minmax(0, 1fr));
+                gap: 0.9rem;
             }
             .breakdown-grid {
+                display: grid;
                 grid-template-columns: repeat(2, minmax(0, 1fr));
-            }
-            .stat-chip,
-            .signal-card,
-            .glass-card,
-            .footer-card {
-                padding: 1rem 1.1rem;
+                gap: 0.9rem;
             }
             .stat-chip {
+                padding: 1rem 1.1rem;
                 border-radius: 18px;
                 background: linear-gradient(180deg, rgba(21, 38, 63, 0.97), rgba(57, 91, 132, 0.93));
                 color: #f8fbff;
             }
-            .stat-chip span,
-            .signal-card span,
-            .eyebrow {
+            .stat-chip span {
                 font-size: 0.76rem;
                 text-transform: uppercase;
                 letter-spacing: 0.08em;
@@ -160,6 +155,21 @@ def inject_styles() -> None:
                 display: block;
                 margin-top: 0.15rem;
                 font-size: 1.25rem;
+            }
+            .signal-card {
+                padding: 1rem 1.1rem;
+            }
+            .signal-card span {
+                font-size: 0.76rem;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                font-weight: 700;
+            }
+            .eyebrow {
+                font-size: 0.76rem;
+                text-transform: uppercase;
+                letter-spacing: 0.08em;
+                font-weight: 700;
             }
             .section-title {
                 margin: 0.2rem 0 0.4rem 0;
@@ -214,9 +224,13 @@ def inject_styles() -> None:
             .footer-card {
                 margin-top: 1rem;
                 color: #4d637b;
+                padding: 1rem 1.1rem;
             }
             .footer-card strong {
                 color: #15263f;
+            }
+            .glass-card {
+                padding: 1rem 1.1rem;
             }
             @media (max-width: 900px) {
                 .hero-grid,
@@ -358,112 +372,115 @@ with right_col:
             </div>
         </section>
         """,
+        unsafe_allow_html=True,
+    )
+
+if run_check:
+    if not user_input.strip():
+        st.warning("Enter a message before running detection.")
+    else:
         try:
             result = predict_message(
                 user_input,
                 artifacts["model"],
                 artifacts["vectorizer"],
             )
-            st.warning("Enter a message before running detection.")
-    else:
-        result = predict_message(
-            user_input,
-            artifacts["model"],
-            artifacts["vectorizer"],
-        )
-        risk_percent = round(result["scam_probability"] * 100)
-        risk_class = "risk-high" if result["is_scam"] else "risk-low"
-        risk_title = "High risk message" if result["is_scam"] else "Low risk message"
-        risk_text = (
-            "The message matches scam-like patterns or contains risky trigger words."
-            if result["is_scam"]
-            else "The message does not strongly resemble common scam messages in this model."
-        )
-
-        result_col, detail_col = st.columns([0.9, 1.1], gap="large")
-
-        with result_col:
-            st.markdown(
-                f"""
-                <section class="result-card {risk_class}">
-                    <span class="eyebrow">Detection Result</span>
-                    <div class="risk-value">{risk_percent}%</div>
-                    <h2 style="margin: 0 0 0.45rem 0;">{risk_title}</h2>
-                    <p style="margin: 0;">{risk_text}</p>
-                    <div class="meter-wrap">
-                        <div class="meter-bar" style="width: {risk_percent}%;"></div>
-                    </div>
-                </section>
-                """,
-                unsafe_allow_html=True,
+            risk_percent = round(result["scam_probability"] * 100)
+            risk_class = "risk-high" if result["is_scam"] else "risk-low"
+            risk_title = (
+                "High risk message" if result["is_scam"] else "Low risk message"
+            )
+            risk_text = (
+                "The message matches scam-like patterns or contains risky trigger words."
+                if result["is_scam"]
+                else "The message does not strongly resemble common scam messages in this model."
             )
 
-        with detail_col:
-            st.markdown(
-                """
-                <section class="glass-card">
-                    <span class="eyebrow">Breakdown</span>
-                    <h2 class="section-title">Why this message got this score</h2>
-                    <p class="section-copy">Use the indicators below to explain the prediction during a demo or report.</p>
-                </section>
-                """,
-                unsafe_allow_html=True,
-            )
-            st.markdown(
-                f"""
-                <div class="breakdown-grid" style="margin-top: 1rem;">
-                    <section class="signal-card">
-                        <span class="eyebrow">Probability</span>
-                        <h3 class="section-title" style="margin-top: 0.25rem;">{risk_percent}% risk</h3>
-                        <p class="section-copy">Estimated chance that the message fits spam or scam behavior.</p>
-                    </section>
-                    <section class="signal-card">
-                        <span class="eyebrow">Model verdict</span>
-                        <h3 class="section-title" style="margin-top: 0.25rem;">{"Scam-like" if result["model_prediction"] == 1 else "Safe-like"}</h3>
-                        <p class="section-copy">Raw classifier output before keyword-based risk adjustment.</p>
-                    </section>
-                </div>
-                """,
-                unsafe_allow_html=True,
-            )
-            if result["keyword_hits"]:
-                keyword_html = "".join(
-                    f'<span class="pill">{keyword}</span>' for keyword in result["keyword_hits"]
-                )
+            result_col, detail_col = st.columns([0.9, 1.1], gap="large")
+
+            with result_col:
                 st.markdown(
                     f"""
-                    <section class="glass-card" style="margin-top: 1rem;">
-                        <span class="eyebrow">Keyword Hits</span>
-                        <div class="pill-row">{keyword_html}</div>
+                    <section class="result-card {risk_class}">
+                        <span class="eyebrow">Detection Result</span>
+                        <div class="risk-value">{risk_percent}%</div>
+                        <h2 style="margin: 0 0 0.45rem 0;">{risk_title}</h2>
+                        <p style="margin: 0;">{risk_text}</p>
+                        <div class="meter-wrap">
+                            <div class="meter-bar" style="width: {risk_percent}%;"></div>
+                        </div>
                     </section>
                     """,
                     unsafe_allow_html=True,
                 )
-            else:
+
+            with detail_col:
                 st.markdown(
                     """
-                    <section class="glass-card" style="margin-top: 1rem;">
-                        <span class="eyebrow">Keyword Hits</span>
-                        <div class="pill-row"><span class="pill">No suspicious keywords detected</span></div>
+                    <section class="glass-card">
+                        <span class="eyebrow">Breakdown</span>
+                        <h2 class="section-title">Why this message got this score</h2>
+                        <p class="section-copy">Use the indicators below to explain the prediction during a demo or report.</p>
                     </section>
                     """,
                     unsafe_allow_html=True,
                 )
-
-        st.markdown("### Safety Recommendations")
-        rec_col1, rec_col2 = st.columns(2, gap="large")
-        for index, recommendation in enumerate(SAFETY_RECOMMENDATIONS):
-            target_col = rec_col1 if index % 2 == 0 else rec_col2
-            with target_col:
                 st.markdown(
                     f"""
-                    <section class="footer-card">
-                        <strong>Recommendation {index + 1}</strong>
-                        <div>{recommendation}</div>
-                    </section>
+                    <div class="breakdown-grid" style="margin-top: 1rem;">
+                        <section class="signal-card">
+                            <span class="eyebrow">Probability</span>
+                            <h3 class="section-title" style="margin-top: 0.25rem;">{risk_percent}% risk</h3>
+                            <p class="section-copy">Estimated chance that the message fits spam or scam behavior.</p>
+                        </section>
+                        <section class="signal-card">
+                            <span class="eyebrow">Model verdict</span>
+                            <h3 class="section-title" style="margin-top: 0.25rem;">{"Scam-like" if result["model_prediction"] == 1 else "Safe-like"}</h3>
+                            <p class="section-copy">Raw classifier output before keyword-based risk adjustment.</p>
+                        </section>
+                    </div>
                     """,
-                 
+                    unsafe_allow_html=True,
+                )
+                if result["keyword_hits"]:
+                    keyword_html = "".join(
+                        f'<span class="pill">{keyword}</span>'
+                        for keyword in result["keyword_hits"]
+                    )
+                    st.markdown(
+                        f"""
+                        <section class="glass-card" style="margin-top: 1rem;">
+                            <span class="eyebrow">Keyword Hits</span>
+                            <div class="pill-row">{keyword_html}</div>
+                        </section>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+                else:
+                    st.markdown(
+                        """
+                        <section class="glass-card" style="margin-top: 1rem;">
+                            <span class="eyebrow">Keyword Hits</span>
+                            <div class="pill-row"><span class="pill">No suspicious keywords detected</span></div>
+                        </section>
+                        """,
+                        unsafe_allow_html=True,
+                    )
+
+            st.markdown("### Safety Recommendations")
+            rec_col1, rec_col2 = st.columns(2, gap="large")
+            for index, recommendation in enumerate(SAFETY_RECOMMENDATIONS):
+                target_col = rec_col1 if index % 2 == 0 else rec_col2
+                with target_col:
+                    st.markdown(
+                        f"""
+                        <section class="footer-card">
+                            <strong>Recommendation {index + 1}</strong>
+                            <div>{recommendation}</div>
+                        </section>
+                        """,
+                        unsafe_allow_html=True,
+                    )
         except Exception as e:
             logger.error(f"Prediction error: {e}")
-            st.error("An error occurred during message analysis. Please try again.")   unsafe_allow_html=True,
-                )
+            st.error("An error occurred during message analysis. Please try again.")

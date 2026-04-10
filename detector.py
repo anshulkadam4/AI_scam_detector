@@ -93,7 +93,7 @@ def train_model(test_size: float = 0.2, random_state: int = 42) -> dict:
 
         y_pred = model.predict(x_test_vec)
         accuracy = accuracy_score(y_test, y_pred)
-        
+
         logger.info(f"Model trained successfully. Accuracy: {accuracy:.4f}")
 
         return {
@@ -106,11 +106,19 @@ def train_model(test_size: float = 0.2, random_state: int = 42) -> dict:
         logger.error(f"Error during model training: {e}")
         raise
 
-"""Predict whether a message is scam or safe."""
+
+def find_scam_keywords(message: str) -> list[str]:
+    """Find scam keywords in a message."""
+    lowered_message = message.lower()
+    return [keyword for keyword in SCAM_KEYWORDS if keyword in lowered_message]
+
+
+def predict_message(message: str, model, vectorizer) -> dict:
+    """Predict whether a message is scam or safe."""
     try:
         if not message or not isinstance(message, str):
             raise ValueError("Message must be a non-empty string")
-        
+
         cleaned_message = clean_text(message)
         vector_input = vectorizer.transform([cleaned_message])
         prediction = int(model.predict(vector_input)[0])
@@ -118,7 +126,9 @@ def train_model(test_size: float = 0.2, random_state: int = 42) -> dict:
         keyword_hits = find_scam_keywords(message)
         scam_probability = float(probabilities[1])
 
-        adjusted_probability = max(scam_probability, min(0.99, 0.15 * len(keyword_hits)))
+        adjusted_probability = max(
+            scam_probability, min(0.99, 0.15 * len(keyword_hits))
+        )
         is_scam = prediction == 1 or bool(keyword_hits)
 
         result = {
@@ -136,10 +146,3 @@ def train_model(test_size: float = 0.2, random_state: int = 42) -> dict:
     except Exception as e:
         logger.error(f"Error during prediction: {e}")
         raise
-    return {
-        "is_scam": is_scam,
-        "model_prediction": prediction,
-        "scam_probability": adjusted_probability,
-        "keyword_hits": keyword_hits,
-        "cleaned_message": cleaned_message,
-    }
