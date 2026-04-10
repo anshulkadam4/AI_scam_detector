@@ -661,6 +661,201 @@ def inject_styles() -> None:
                 }
             }
 
+            /* ===== COMPREHENSIVE UI STYLING ===== */
+            
+            /* TEXT ELEMENTS */
+            h1, h2, h3, h4, h5, h6 {
+                color: #0f1d33 !important;
+                font-weight: 700 !important;
+                letter-spacing: -0.01em;
+            }
+            p, span, label, div {
+                color: #15263f;
+            }
+            label {
+                font-weight: 600 !important;
+                color: #15263f !important;
+            }
+            a {
+                color: #17345a !important;
+                text-decoration: none;
+                transition: color 0.2s ease;
+            }
+            a:hover {
+                color: #a24a3d !important;
+                text-decoration: underline;
+            }
+
+            /* FORM ELEMENTS */
+            input[type="text"],
+            input[type="email"],
+            input[type="password"],
+            input[type="number"],
+            textarea,
+            select {
+                background: rgba(255, 255, 255, 0.85) !important;
+                border: 2px solid rgba(15, 29, 51, 0.15) !important;
+                border-radius: 16px !important;
+                color: #15263f !important;
+                padding: 0.85rem 1rem !important;
+                font-size: 0.95rem !important;
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
+                transition: all 0.2s ease !important;
+            }
+            input[type="text"]:focus,
+            input[type="email"]:focus,
+            input[type="password"]:focus,
+            input[type="number"]:focus,
+            textarea:focus,
+            select:focus {
+                border: 2px solid #17345a !important;
+                background: rgba(255, 255, 255, 0.95) !important;
+                box-shadow: 0 0 0 3px rgba(23, 52, 90, 0.1) !important;
+                outline: none !important;
+            }
+            input::placeholder {
+                color: rgba(15, 29, 51, 0.4) !important;
+            }
+
+            /* SCROLLBARS */
+            ::-webkit-scrollbar {
+                width: 10px;
+                height: 10px;
+            }
+            ::-webkit-scrollbar-track {
+                background: rgba(15, 29, 51, 0.05);
+                border-radius: 10px;
+            }
+            ::-webkit-scrollbar-thumb {
+                background: linear-gradient(180deg, #17345a, #a24a3d);
+                border-radius: 10px;
+                transition: all 0.2s ease;
+            }
+            ::-webkit-scrollbar-thumb:hover {
+                background: linear-gradient(180deg, #0f1d33, #8b3d33);
+                box-shadow: 0 0 6px rgba(15, 29, 51, 0.2);
+            }
+
+            /* SIDEBAR STYLING */
+            [data-testid="stSidebar"] {
+                background: linear-gradient(180deg, rgba(249, 250, 251, 0.98), rgba(235, 242, 247, 0.98)) !important;
+            }
+            [data-testid="stSidebar"] [data-testid="stMarkdownContainer"] {
+                color: #0f1d33 !important;
+            }
+            [data-testid="stSidebar"] h3 {
+                color: #0f1d33 !important;
+                margin-top: 1.5rem !important;
+                margin-bottom: 0.85rem !important;
+                font-size: 1rem !important;
+            }
+
+            /* METRICS */
+            [data-testid="stMetric"] {
+                background: linear-gradient(135deg, rgba(23, 52, 90, 0.08), rgba(162, 74, 61, 0.05)) !important;
+                border: 1px solid rgba(15, 29, 51, 0.1) !important;
+                border-radius: 16px !important;
+                padding: 1rem !important;
+                transition: all 0.2s ease;
+            }
+            [data-testid="stMetric"]:hover {
+                box-shadow: 0 8px 24px rgba(15, 29, 51, 0.08) !important;
+                transform: translateY(-2px);
+            }
+            [data-testid="stMetricLabel"] {
+                color: #4d637b !important;
+                font-size: 0.85rem !important;
+                font-weight: 600 !important;
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+            }
+            [data-testid="stMetricValue"] {
+                color: #0f1d33 !important;
+                font-size: 1.8rem !important;
+                font-weight: 700 !important;
+            }
+
+            /* DIVIDERS */
+            hr {
+                border: none !important;
+                height: 1px !important;
+                background: linear-gradient(90deg, transparent, rgba(15, 29, 51, 0.2), transparent) !important;
+                margin: 1.5rem 0 !important;
+            }
+
+            /* MULTISELECT & SELECT STYLING */
+            [data-testid="stMultiSelect"] {
+                background: rgba(255, 255, 255, 0.85) !important;
+                border: 2px solid rgba(15, 29, 51, 0.15) !important;
+                border-radius: 16px !important;
+            }
+            [data-testid="stMultiSelect"]:focus-within {
+                border: 2px solid #17345a !important;
+                box-shadow: 0 0 0 3px rgba(23, 52, 90, 0.1) !important;
+            }
+
+            /* COLUMNS & CONTAINERS */
+            [data-testid="column"] {
+                gap: 1.5rem;
+            }
+
+            /* DATAFRAME/TABLE STYLING */
+            [data-testid="stDataFrame"] {
+                border: 1px solid rgba(15, 29, 51, 0.1) !important;
+                border-radius: 12px !important;
+                overflow: hidden;
+            }
+            [data-testid="stDataFrame"] thead {
+                background: linear-gradient(135deg, rgba(15, 29, 51, 0.1), rgba(23, 52, 90, 0.08)) !important;
+            }
+            [data-testid="stDataFrame"] th {
+                color: #0f1d33 !important;
+                font-weight: 700 !important;
+                border-bottom: 2px solid rgba(15, 29, 51, 0.15) !important;
+            }
+
+            /* SUCCESS/ERROR/WARNING MESSAGES */
+            [data-testid="stAlert"] {
+                border-radius: 16px !important;
+                border: 2px solid rgba(15, 29, 51, 0.1) !important;
+            }
+            .stSuccess {
+                background-color: rgba(76, 175, 80, 0.1) !important;
+                border-color: rgba(76, 175, 80, 0.3) !important;
+            }
+            .stError {
+                background-color: rgba(244, 67, 54, 0.1) !important;
+                border-color: rgba(244, 67, 54, 0.3) !important;
+            }
+            .stWarning {
+                background-color: rgba(255, 152, 0, 0.1) !important;
+                border-color: rgba(255, 152, 0, 0.3) !important;
+            }
+
+            /* TABS */
+            [data-testid="stTabs"] [role="tab"] {
+                border-radius: 12px 12px 0 0 !important;
+                color: #4d637b !important;
+                font-weight: 600 !important;
+                transition: all 0.2s ease;
+            }
+            [data-testid="stTabs"] [role="tab"][aria-selected="true"] {
+                color: #0f1d33 !important;
+                background: rgba(23, 52, 90, 0.1) !important;
+                border-bottom: 2px solid #17345a !important;
+            }
+            [data-testid="stTabs"] [role="tab"]:hover {
+                background: rgba(23, 52, 90, 0.08) !important;
+            }
+
+            /* CHECKBOX & RADIO */
+            [data-testid="stCheckbox"] {
+                color: #15263f !important;
+            }
+            [data-testid="stRadio"] {
+                color: #15263f !important;
+            }
+
         </style>
         """,
         unsafe_allow_html=True,
