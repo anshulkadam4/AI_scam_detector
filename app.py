@@ -432,6 +432,22 @@ def inject_styles() -> None:
                 border-color: rgba(162, 74, 61, 0.35) !important;
                 transform: translateY(-1px) !important;
             }
+            /* Expander styling */
+            [data-testid="stExpander"] > div > button {
+                background: linear-gradient(135deg, rgba(15, 29, 51, 0.08), rgba(23, 52, 90, 0.06)) !important;
+                border: 1px solid rgba(15, 29, 51, 0.12) !important;
+                border-radius: 16px !important;
+                color: #15263f !important;
+                padding: 0.9rem 1.2rem !important;
+                font-weight: 600 !important;
+                font-size: 0.95rem !important;
+                transition: all 0.2s ease !important;
+            }
+            [data-testid="stExpander"] > div > button:hover {
+                background: linear-gradient(135deg, rgba(15, 29, 51, 0.12), rgba(23, 52, 90, 0.1)) !important;
+                border-color: rgba(15, 29, 51, 0.2) !important;
+                box-shadow: 0 4px 12px rgba(15, 29, 51, 0.1) !important;
+            }
             textarea {
                 border-radius: 16px !important;
                 border: 2px solid rgba(21, 38, 63, 0.15) !important;
